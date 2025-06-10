@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>총칼로리 계산결과</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 크롬과 유사한 기본 폰트 설정 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        /* 윈도우 창 폭 조정 */
+        .custom-max-w {
+            max-width: 853px; /* 브라우저 창의 2/3 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- 메인 컨테이너 -->
+    <div class="container mx-auto mt-8 flex justify-center">
+        <!-- 출력 컨테이너 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+            <h1 class="text-3xl font-bold text-center mb-6 text-green-600">총칼로리 계산결과</h1>
+            <!-- 메뉴 -->
+            <div class="flex mb-6">
+                <div id="calculate-menu" class="w-1/2 text-center text-gray-500 cursor-pointer border-b-2 border-gray-500">계산하기</div>
+                <div id="history-menu" class="w-1/2 text-center text-gray-500 cursor-pointer border-b-2 border-gray-500">
+                    <a href="/history">이력보기</div>
+            </div>
+            <!-- 텍스트 박스 -->
+            <div class="border-l-4 border-green-600 p-4 bg-gray-50 rounded-r-lg">
+                <div class="space-y-2">
+                 
+                    {% if gender == 'male' %}
+                        <p class="text-lg"><strong>성별:</strong> 남자</p>
+                        <p class="text-lg"><strong>음식 종류:</strong> {{text}}</p>
+                        <p class="text-lg"><strong>총 칼로리: </strong> {{allcal}}</p>
+
+                        {% if overcal %}
+                            <p class="text-lg"><strong>기준 칼로리 초과량: </strong> {{overcal}}</p>
+                            <p class="text-lg"><strong>추천 운동: </strong>
+
+                                <p class="text-lg">{{ overcal}} 칼로리를 소모하기 위해선</p>
+                                {% for cal in exercise_cal %}
+                                    {% set total_hours = overcal / cal['exercise_cal'] %}
+                                    {% set hours = total_hours | int %}
+                                    {% set mins = ((total_hours - hours) * 60) | round(0) | int %}
+                                    <p>{{ hours }}시간 {{ mins }}분 동안 {{ cal['exercise'] }}</p>      
+                                {% endfor %}
+                                <p>을(를) 해야합니다.</p>
+                            </p>
+
+                        {% else %}
+                            <p class="text-lg"><strong>기준 칼로리 부족량: </strong>{{lowcal}}</p>
+                            <p class="text-lg"><strong>추천 음식: </strong>
+            
+                                <p class="text-lg">{{ lowcal}} 칼로리를 보충하기 위해선 </p>
+                                {% for food in foodlist %}
+                                    {{ food['FOOD'] }}
+                                {% endfor %}
+                                <p class="text-lg">을(를) 추천합니다.</p>
+                            </p>
+
+                        {% endif %}
+
+                    {% elif gender == 'female' %}
+                        <p class="text-lg"><strong>성별:</strong> 여자</p>
+                        <p class="text-lg"><strong>음식 종류:</strong> {{text}}</p>
+
+                        <p class="text-lg"><strong>총 칼로리: </strong>{{allcal}}</p>
+
+                        {% if overcal %}
+                            <p class="text-lg"><strong>기준 칼로리 초과량: </strong>{{overcal}}</p>
+                            <p class="text-lg"><strong>추천 운동: </strong>
+
+                                <p class="text-lg">{{ overcal}} 칼로리를 소모하기 위해선</p>
+                                {% for cal in exercise_cal %}
+                                    {% set total_hours = overcal / cal['exercise_cal'] %}
+                                    {% set hours = total_hours | int %}
+                                    {% set mins = ((total_hours - hours) * 60) | round(0) | int %}
+                                    <p>{{ hours }}시간 {{ mins }}분 동안 {{ cal['exercise'] }}</p>      
+                                {% endfor %}
+                                <p>을(를) 해야합니다.</p>
+                            </p>
+
+                        {% else %}
+                            <p class="text-lg"><strong>기준 칼로리 부족량: </strong>{{lowcal}}</p>
+                            <p class="text-lg"><strong>추천 음식: </strong>
+
+                                <p class="text-lg">{{ lowcal}} 칼로리를 보충하기 위해선 </p>
+                                {% for food in foodlist %}
+                                    {{ food['FOOD'] }}
+                                {% endfor %}
+                                <p class="text-lg">을(를) 추천합니다.</p>
+                            </p>
+                        {% endif %}
+
+                    {% endif %}
+                    
+                </div>
+            </div>
+            <!-- 다시 계산하기 버튼 -->
+            <a href="/" class="block mt-4 w-full bg-sky-500 text-white p-2 rounded hover:bg-sky-600 text-center transition">다시 계산하기</a>
+        </div>
+    </div>
+</body>
+</html>

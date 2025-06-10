@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다이어트</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5; /* 밝은 회색 배경 */
+            margin: 0;
+            display: flex;
+            justify-content: center; /* 가로 방향 중앙 정렬 */
+        }
+
+        /* 입력창 컨테이너: 브라우저 상단에서 1cm 아래에 위치 */
+        .input-container {
+            margin-top: 1cm; /* 상단에서 1cm 아래 */
+            width: 50%; /* 브라우저 가로의 절반 차지 */
+            background-color: #ffffff; /* 흰색 배경 */
+            padding: 30px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 생성 */
+            border-radius: 10px; /* 모서리 둥글게 */
+        }
+
+        /* 제목 스타일 */
+        h1 {
+            font-size: 3em; /* 보통 크기의 3배 */
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* 하단 메뉴 */
+        .submenu {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px; /* 입력 항목과의 간격 */
+            position: relative;
+        }
+
+        .submenu div {
+            flex: 1; /* 각 항목은 동일한 크기로 배치 */
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 10px 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* 활성 및 비활성 상태 */
+        .submenu div.active {
+            color: #6ABA6E; /* 활성화된 항목은 연한 녹색 (#6ABA6E) */
+        }
+
+        .submenu div.inactive {
+            color: #888; /* 비활성화된 항목은 회색 */
+        }
+
+        /* 타이틀바 */
+        .title-bar {
+            position: absolute;
+            width: 100%; /* 한 Column의 길이 */
+            height: 0.2px; /* 두께를 얇게 설정 */
+            bottom: 0;
+            left: 0;
+        }
+
+        .title-bar-active {
+            background-color: #6ABA6E; /* 연한 녹색 (병원 느낌의 색) */
+        }
+        .title-bar-inactive {
+            background-color: #cccccc; /* 비활성화된 회색 타이틀바 */
+        }
+
+        /* 입력 필드 및 레이블 */
+        .input-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .input-field label {
+            width: 20%; /* 레이블은 20% */
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .input-field textarea {
+            flex: 1; /* 입력창은 남은 공간을 모두 차지 */
+            padding: 8px;
+            border: 1px solid #ccc; /* 테두리 옅은 회색 */
+            border-radius: 4px;
+            background-color: #f9f9f9; /* 입력창 배경색 */
+            font-size: 1rem;
+            resize: vertical; /* 세로 크기 조절 가능 */
+            height: 100px; /* 기본 높이 설정 */
+        }
+
+        /* 계산하기 버튼 스타일 */
+        .calculate-btn {
+            margin-top: 15px; /* 위 항목과의 간격 추가 */
+            width: 100%; /* 버튼 폭은 전체 사용 */
+            padding: 8px;
+            border: none; /* 테두리 제거 */
+            border-radius: 4px; /* 버튼 모서리를 둥글게 */
+            background-color: #6ABA6E; /* 타이틀바와 동일한 연한 녹색 */
+            color: #FFFFFF; /* 흰 글자색 */
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* 계산하기 버튼 호버 효과 */
+        .calculate-btn:hover {
+            background-color: #5C9E5F; /* 호버 시 약간 더 짙은 녹색 */
+        }
+
+        .output-container {
+            display: none; /* 초기에는 숨김 */
+        }
+
+        .output-message {
+            font-size: 1.2rem;
+            text-align: center;
+            color: #333; /* 검정에 가까운 색 */
+        }
+
+        a {
+            text-decoration:none;
+            color: black;
+        }
+
+        a:hover {
+            color : #5C9E5F;
+        }
+
+        .error {
+        background-color: #ffdddd;
+        color: #ff0000;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 전체 컨테이너 -->
+    <div class="input-container" id="input-container">
+        <!-- 페이지 제목 -->
+        <h1>칼로리 계산기</h1>
+
+        <!-- 상단 메뉴 -->
+        <div class="submenu">
+            <div id="calculate-menu" class="active">
+                계산하기
+                <div class="title-bar title-bar-active"></div> <!-- 활성화된 연한 녹색 타이틀바 -->
+            </div>
+            
+            <div id="history-menu" class="inactive">
+                <a href="/history">이력 보기</a>
+                <div class="title-bar title-bar-inactive"></div> <!-- 비활성화된 회색 타이틀바 -->
+            </div>
+        </div>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <!-- 입력 필드 -->
+        <form action="/calculate" method="post">
+            <div class="input-field">
+                <label for="gender">성별:</label>
+                <select id="gender" name="gender">
+                    <option value="male">남자</option>
+                    <option value="female">여자</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label for="food">음식 종류:</label>
+                <textarea id="food"name="foods" placeholder="먹은 음식을 입력하세요 (예: 김밥, 떡볶이, 돈까스 등) 구분은 ,로 표시"></textarea>
+            </div>
+            <div>
+                입력가능한 음식들:
+                {% for food in foods %}
+                    {{ food['FOOD'] }}
+                {% endfor %}
+
+            </div>
+        <!-- 계산하기 버튼 -->
+            <button type="submit" class="calculate-btn" id="calculate-btn">계산하기</button>
+        </form>
+
+    </div>
+
+    <!-- 출력창 -->
+    <div class="output-container" id="output-container">
+        <h1>결과 출력</h1>
+        <p class="output-message" id="output-message">계산 결과가 여기에 표시됩니다.</p>
+    </div>
+
+    <script>
+        // 메뉴 선택 전환
+        const calculateMenu = document.getElementById("calculate-menu");
+        const historyMenu = document.getElementById("history-menu");
+
+        const calculateTitleBar = calculateMenu.querySelector(".title-bar");
+        const historyTitleBar = historyMenu.querySelector(".title-bar");
+
+        calculateMenu.addEventListener("click", () => {
+            // '계산하기' 활성화
+            calculateMenu.classList.add("active");
+            calculateMenu.classList.remove("inactive");
+            calculateTitleBar.classList.remove("title-bar-inactive");
+            calculateTitleBar.classList.add("title-bar-active");
+
+            // '이력보기' 비활성화
+            historyMenu.classList.add("inactive");
+            historyMenu.classList.remove("active");
+            historyTitleBar.classList.remove("title-bar-active");
+            historyTitleBar.classList.add("title-bar-inactive");
+        });
+
+        historyMenu.addEventListener("click", () => {
+            // '이력보기' 활성화
+            historyMenu.classList.add("active");
+            historyMenu.classList.remove("inactive");
+            historyTitleBar.classList.remove("title-bar-inactive");
+            historyTitleBar.classList.add("title-bar-active");
+
+            // '계산하기' 비활성화
+            calculateMenu.classList.add("inactive");
+            calculateMenu.classList.remove("active");
+            calculateTitleBar.classList.remove("title-bar-active");
+            calculateTitleBar.classList.add("title-bar-inactive");
+        });
+
+        // 계산하기 버튼 클릭 이벤트
+        const calculateBtn = document.getElementById("calculate-btn");
+        const inputContainer = document.getElementById("input-container");
+        const outputContainer = document.getElementById("output-container");
+        const outputMessage = document.getElementById("output-message");
+
+        calculateBtn.addEventListener("click", () => {
+            // 입력 값 가져오기
+            const gender = document.getElementById("gender").value;
+            const food = document.getElementById("food").value;
+
+            // 출력 메시지 구성
+            outputMessage.textContent = `성별: ${gender}, 먹은 음식: ${food}`;
+
+            // 출력창 표시
+            inputContainer.style.display = "none";
+            outputContainer.style.display = "block";
+        });
+    </script>
+
+</body>
+</html>

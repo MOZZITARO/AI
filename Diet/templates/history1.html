@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식단 이력</title>
+</head>
+<style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5; /* 밝은 회색 배경 */
+            margin: 0;
+            display: flex;
+            justify-content: center; /* 가로 방향 중앙 정렬 */
+        }
+        
+
+
+        /* 제목 스타일 */
+        h1 {
+            font-size: 3em; /* 보통 크기의 3배 */
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;}
+
+            
+        /* 계산하기 버튼 스타일 */
+        .calculate-btn {
+            margin-top: 15px; /* 위 항목과의 간격 추가 */
+            width: 100%; /* 버튼 폭은 전체 사용 */
+            padding: 8px;
+            border: none; /* 테두리 제거 */
+            border-radius: 4px; /* 버튼 모서리를 둥글게 */
+            background-color: #6ABA6E; /* 타이틀바와 동일한 연한 녹색 */
+            color: #FFFFFF; /* 흰 글자색 */
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* 계산하기 버튼 호버 효과 */
+        .calculate-btn:hover {
+            background-color: #5C9E5F; /* 호버 시 약간 더 짙은 녹색 */
+        }
+
+        a.calculate-btn {
+            text-decoration: none;
+        }
+
+        .nav-menu{
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        .nav-menu a{
+            color: #555;
+            font-weight: bold;
+            padding: 10px;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .nav-menu a.acive{
+            color: #3d8b40;
+            border-bottom: 2px solid #3d8b40;
+        }
+
+
+</style>
+<body>
+    <div class="container">
+        <h1>식단 이력</h1>
+
+        <nav class="nav-menu">
+            <a href="/" >식단 입력</a>
+            <a class="acive">이력보기</a>                
+        </nav>
+        
+         
+        {%if records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>먹은 음식</th>
+                        <th>총 칼로리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{record.created_at.strftime('%Y-%m-%d %H:%M')}}</td>
+                        <td>{{record.allfood}}</td>
+                        <td>{{record.allcalories}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+        {%else%}
+            <div class="no-data">
+                <p>저장된 데이터가 없습니다.</p>
+            </div>  
+            </table>
+        {%endif%}
+        
+        <a href="/" class="calculate-btn">다시 계산하기</a>
+    </div>
+</body>
+</html>
